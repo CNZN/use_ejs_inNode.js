@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+  <style>
+    img{
+      width: 100px;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+      <div class="form-group">
+        <label>选择图片</label>
+        <input type="file" class="form-control" id="carImg"/>
+        <img src="" alt="" id="img">
+      </div>
+      <div class="form-group">
+        <label for="carname">汽车名字</label>
+        <input type="text" class="form-control" id="carname" placeholder="请输入汽车名字">
+      </div>
+      <div class="form-group">
+        <label>车主</label>
+        <select name="" id="selectuser" class="form-control">
+          <% for(var i=0;i<list.length;i++){ %>
+          <option value="<%=list[i]._id%>"> <%=list[i].username%> </option>
+          <% } %>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+  </div>
+  <script>
+    // 选择图片后触发
+    $('#carImg').change(function(){
+      var imginfor = $('#carImg').get(0).files[0];
+      // // 创建一个FormData对象,用来组装一组用 XMLHttpRequest发送请求的键/值对
+      var formdata = new FormData();
+      // 把 input 标签获取的文件加入 FromData 中
+      formdata.append('avatar',imginfor)
+      $.ajax({
+        type:'post',
+        url:"http://localhost:7777/upload",
+        data:formdata,   //请求体里带着data 也就是携带了input标签所获取文件的formdata
+        async: true,  //异步
+        cache: false,   //缓存
+        contentType: false, //发给服务端的数据格式
+        processData: false, //进度条
+        success: function (data) {
+          if(data.code === 200){
+            $('#img').attr('src', data.path)
+          }
+        },
+      })
+    })
+    $('button').click(function(){
+      var carname = $('#carname').val();
+      var username = $('#selectuser').val();
+      var imgname = $('#img').attr('src');
+      $.post('http://localhost:7777/doAdd',{
+        carname,    //车名
+        username,    //车主
+        imgname     //车照
+      }).then(res=>{
+        if(res.code === 200){
+          location.href='/'
+        }
+      })
+    })
+  </script>
+</body>
+</html>

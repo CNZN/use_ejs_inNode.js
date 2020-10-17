@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录页面</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="layer-v3.1.1/layer/layer.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery-cookie/1.0/jquery.cookie.min.js"></script>
+    <script src="javascripts/vue.js"></script>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" class="form-control" id="username" placeholder="Input field">
+        </div>
+        <div class="form-group">
+            <label for="password">用户密码</label>
+            <input type="text" class="form-control" id="password" placeholder="Input field">
+
+        </div>
+        <button v-on:click='sub' type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</body>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+
+        },
+        methods: {
+            sub: function () {
+                var username = $("#username").val();
+                var password = $("#password").val();
+                $.post("http://localhost:7777/doLogin", {
+                    username,
+                    password
+                }).then(res => {
+                    // layer.msg(res.msg,{icon:7,time:2000})
+                    alert(res.msg)
+                    if (res.code === 200) {
+                        location.href = "/"
+                    }
+                })
+            }
+        }
+    })
+</script>
+
+</html>

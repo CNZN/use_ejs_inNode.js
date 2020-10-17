@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery-cookie/1.0/jquery.cookie.min.js"></script>
+    <script src="layer-v3.1.1/layer/layer.js"></script>
+    <script src="javascripts/vue.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4" id="app">
+                <div class="btn">
+                    <button @click='click1'>图片</button>
+                    <button @click='click2'>专栏</button>
+                    <button @click='click3'>热点</button>
+                </div>
+                <div class="photo">
+                    <div v-for='(item,index) in news' :key='item' v-if="index < 3">
+
+                    </div>
+                </div>
+                <ul>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        // var aa= "<%=list%>";
+        // var bb = "<%=list.length%>" 
+        // console.log(aa,bb)
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                news: ''
+            },
+            methods: {
+                click1: function () {
+                    // $.get('http://localhost:7777/news?page=' + obj.curr + '&pagesize=3').then(res => {
+                    //     if (res.code === 200) {
+                    //         var data = res.list;
+                    //         $('#tb').html('');
+                    //         for (var i = 0; i < data.length; i++) {
+                    //             $('#tb').append(`
+                    //                     <tr>
+                    //                         <td>${i + 1}</td>
+                    //                         <td> ${data[i].carname} </td>
+                    //                         <td> ${data[i].p.username} </td>
+                    //                         <td> <img src="${data[i].imgname}" alt=""> </td>
+                    //                         <td>
+                    //                             <a href="/edit/${data[i]._id}" class="btn btn-primary">修改</a>
+                    //                             <e class="btn btn-danger" data-id="${data[i]._id}">删除</e>
+                    //                         </td>
+                    //                     </tr>
+                    //                         `);
+                    //         }
+                    //     }
+                    //     dele();
+                    // })
+                },
+                click2: function () {
+
+                },
+                click3: function () {
+
+                },
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <style>
+        img {
+            width: 3rem
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            /* font-size: 100px; */
+            /* 1vm=3.75（逻辑像素） 屏幕宽度 */
+            /* font-size: 26.666667vw; */
+            /* 1vw=7.5px（物理像素）  设计图宽度 */
+            font-size: 13.333333vw;
+            /* 640px */
+            /* 1vm=3.2vw  1vm=6.4vw */
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            font-size: 12px;
+        }
+
+        header {
+            height: 1rem;
+            background: #999999;
+        }
+
+        section {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        footer {
+            height: 1rem;
+            background: #666666;
+            font-size: .3rem;
+            color: white;
+        }
+
+        img {
+            width: 1rem
+        }
+    </style>
+</head>
+
+<body>
+    <!--  -->
+    <header>
+
+    </header>
+    <!--  -->
+    <section>
+        首页
+        <div class="container">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>车名</th>
+                        <th>车主</th>
+                        <th>车照</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="tb">
+                    <!-- 先显示出来几个 -->
+                    <% for(var i =0;i<list.length;i++){ %>
+                    <tr>
+                        <td><%=i+1%></td>
+                        <td><%=list[i].carname%></td>
+                        <td><%=list[i].p.username%></td>
+                        <td>
+                            <img src="../../<%=list[i].imgname%>" alt="">
+                        </td>
+                        <td>
+                            <a href="" class="btn btn-primary">修改</a>
+                            <button class="btn btn-danger">删除</button>
+                        </td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+        <div id="remove">
+
+        </div>
+    </section>
+    <!--  -->
+    <footer>
+        我是尾部导航
+    </footer>
+    <script>
+    </script>
+    <script>
+        var number = 1;
+        $('section').scroll(function () {
+            // 滚轮距离
+            var scrollTop = $(this).scrollTop();
+            // 可见高度
+            var windowHeight = $(this).height();
+            // 页面高
+            var scrollHeight = $(this).get(0).scrollHeight;
+            // 判断数据条数
+            if (number > Math.ceil('<%=list.length%>' / 3)) {
+                $('#remove').html('已经到底啦')
+                return;
+            }
+            //监听高度以及判断
+            if (scrollTop + windowHeight >= scrollHeight) {
+                //一个加载的图片,让别人觉得正在加载
+                $('#remove').html('<img style="width: 100px;margin-left:100px;" src="../../images/timg.gif" alt=""/>')
+                //设置延时器,进行填充数据
+                setTimeout(function () {
+                    //请求后台,获得数据
+                    $.ajax({
+                        type: 'get',
+                        url: 'http://localhost:7777/phone/pindex/news?page=' + number + '&pagesize=3',
+                        success: function (data) {
+                            if (data.code === 200) {
+                                number++;
+                            }
+                            var result = '';
+                            //进行拼接数据以及填充数据
+                            if (data.list) {
+                                var data1 = data.list;
+                            }
+                            if (data1.length > 0) {
+                                for (i = 0; i < data1.length; i++) {
+                                    result += `
+                                        <tr>
+                                            <td>${i + 1}</td>
+                                            <td>${data1[i].carname}</td>
+                                            <td>${data1[i].p.username}</td>
+                                            <td>
+                                                <img src="../../${data1[i].imgname}" alt="">
+                                            </td>
+                                            <td>
+                                                <a href="" class="btn btn-primary">修改</a>
+                                                <button class="btn btn-danger">删除</button>
+                                            </td>
+                                        </tr>
+                                        `
+                                }
+                                $('#tb').append(result);
+                                $('#remove').html('')
+                            }
+                        }
+                    });
+                }, 1500)
+            }
+        });
+    </script>
+</body>
+
+</html>

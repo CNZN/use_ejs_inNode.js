@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="stylesheets/laypage.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="layer-v3.1.1/layer/layer.js"></script>
+    <script src="javascripts/getParameter.js"></script>
+    <script src="javascripts/laypage.js"></script>
+    <style>
+        img {
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <p class='btn btn-warning''>退出登录</p>
+        <a href="/add" class="btn btn-primary"> 新增</a>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>车名</th>
+                    <th>车主</th>
+                    <th>车照</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="tb">
+
+            </tbody>
+        </table>
+        <ul id="laypage"></ul>
+    </div>
+    <script>
+
+        //获取第一页的数据
+        first();
+        function first() {
+            $.get('http://localhost:7777/news?page=1&pagesize=3').then(res => {
+                if (res.code === 200) {
+                    var data = res.list;
+                    $('#tb').html('');
+                    for (var i = 0; i < data.length; i++) {
+                        $('#tb').append(`
+                            <tr>
+                                <td>${i + 1}</td>
+                                <td> ${data[i].carname} </td>
+                                <td> ${data[i].p.username} </td>
+                                <td> <img src="${data[i].imgname}" alt=""> </td>
+                                <td>
+                                    <a href="/edit/${data[i]._id}" class="btn btn-primary">修改</a>
+                                    <e class="btn btn-danger" data-id="${data[i]._id}">删除</e>
+                                </td>
+                            </tr>
+                        `);
+                    }
+                }
+                dele();
+            })
+        }
+        //获取剩下页
+        getlist();
+        function getlist() {
+            //获取页面数据
+            laypage({
+                cont: "laypage", //容器。值支持id名、原生dom对象，jquery对象。【如该容器为】：<div id="page1"></div>
+                pages: Math.ceil('<%=list.length%>' / 3), //通过后台拿到的总页数
+                curr: 1, //当前页
+                skin: '#666666',//设置当前页样式，可以使用内置皮肤（yahei），也可以直接赋值16进制颜色值，如:#c00
+                groups:  Math.ceil('<%=list.length%>' / 3),//连续显示分页数
+                skip: true,     //是否开启跳页
+                first: '首页',
+                last: '尾页',
+                prev: '<', //若不显示，设置false即可
+                next: '>', //若不显示，设置false即可
+                jump: function (obj, first) {
+                    //触发分页后的回调
+                    //first判断是否第1次切换页码，这里只要不是第1次切换就调用分页获取数据函数获取指定页数据
+                    if (!first) { //点击不同页码触发的函数，并传递当前页：obj.curr
+                        // demo(obj.curr);
+                        // console.log(obj.curr);
+                        $.get('http://localhost:7777/news?page=' + obj.curr + '&pagesize=3').then(res => {
+                            if (res.code === 200) {
+                                var data = res.list;
+                                $('#tb').html('');
+                                for (var i = 0; i < data.length; i++) {
+                                    $('#tb').append(`
+                                        <tr>
+                                            <td>${i + 1}</td>
+                                            <td> ${data[i].carname} </td>
+                                            <td> ${data[i].p.username} </td>
+                                            <td> <img src="${data[i].imgname}" alt=""> </td>
+                                            <td>
+                                                <a href="/edit/${data[i]._id}" class="btn btn-primary">修改</a>
+                                                <e class="btn btn-danger" data-id="${data[i]._id}">删除</e>
+                                            </td>
+                                        </tr>
+                                            `);
+                                }
+                            }
+                            dele();
+                        })
+                    }
+                }
+            });
+        }
+        // 封装删除函数 
+        function dele() {
+            $('e').click(function () {
+                // 删数据
+                var id = $(this).attr('data-id')
+                var _this = $(this);
+                layer.confirm('是否删除', {
+                    btn: ['删除', '取消'] //按钮
+                }, function () {
+                    // 删节点
+                    $.ajax({
+                        type: 'delete',
+                        url: 'http://localhost:7777/delete/' + id,
+                        success: function (res) {
+                            if (res.code === 200) {
+                                layer.msg(res.msg, { icon: 1, time: 500 });
+                                _this.parent().parent().remove();
+                            }
+                        }
+                    })
+                }, function () {
+
+                });
+            })
+        }
+        // 退出登录删除cookie
+        $('p').click(function(){
+            console.log('aa')
+            $.get('http://localhost:7777/dodelete').then(res=>{
+                alert(res.msg);
+                location.href='/login'
+            })
+        })
+    </script>
+
+</body>
+
+</html>
